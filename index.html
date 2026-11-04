@@ -143,6 +143,19 @@ button.chip.on{background:var(--rose);color:#fff;border-color:var(--rose)}
 .lb img{max-width:100%;max-height:72vh;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
 .lb p{margin:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.3rem}
 .lb span{font-size:.85rem;opacity:.85}
+.tabs.sub{margin:14px 0 2px}
+.tabs.sub button{font-size:.82rem;padding:9px 4px}
+.tabs.sub button span{display:inline;font-size:1rem}
+.donut{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.donut svg{flex:none}
+.donut .key{flex:1;min-width:150px;display:flex;flex-direction:column;gap:7px}
+.krow{display:flex;align-items:center;gap:8px;font-size:.88rem}
+.krow i{width:11px;height:11px;border-radius:50%;flex:none}
+.krow span{flex:1;min-width:0;overflow-wrap:anywhere}
+.krow b{white-space:nowrap}
+.krow em{color:var(--mute);font-style:normal;font-size:.8rem;white-space:nowrap}
+.dmid{font:600 1.05rem "DM Sans",sans-serif;fill:var(--plum)}
+.dsub{font:400 .62rem "DM Sans",sans-serif;fill:var(--mute)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:120;background:var(--plum);color:#fff;padding:10px 18px;border-radius:99px;font-size:.9rem;max-width:90vw;box-shadow:0 10px 28px rgba(59,29,61,.3)}
 </style>
 </head>
@@ -172,13 +185,38 @@ button.chip.on{background:var(--rose);color:#fff;border-color:var(--rose)}
 </div>
 
 <section id="spendView" hidden>
-  <div class="panel">
-    <div class="big" id="sTotal">₹0</div>
-    <div class="meta"><span id="sCount">0 things bought</span>
-    <label>Group budget ₹ <input id="sBudget" type="number" min="0" inputmode="numeric" placeholder="optional"></label></div>
-    <div class="bud" id="sBar"><i></i></div>
-    <p class="meta" id="sLeft" style="margin:6px 0 0"></p>
+  <div class="tabs sub" role="tablist">
+    <button role="tab" id="subM" aria-selected="true"><span>💁‍♀️</span> Just me</button>
+    <button role="tab" id="subG" aria-selected="false"><span>👯</span> The split</button>
   </div>
+
+  <div id="mineView">
+    <div class="panel">
+      <div class="big" id="mTotal">₹0</div>
+      <div class="meta"><span id="mCount">this trip has cost you nothing yet</span>
+      <label>My budget ₹ <input id="mBudget" type="number" min="0" inputmode="numeric" placeholder="optional"></label></div>
+      <div class="bud" id="mBar"><i></i></div>
+      <p class="meta" id="mLeft" style="margin:6px 0 0"></p>
+    </div>
+    <div class="panel"><h2>My money at a glance</h2><div id="mFacts"></div></div>
+    <div class="panel"><h2>Where my money went</h2><div class="donut" id="mChart"></div></div>
+    <div class="panel"><h2>Things I paid for</h2><div id="mList"></div></div>
+  </div>
+
+  <div id="groupView" hidden>
+    <div class="panel">
+      <div class="big" id="sTotal">₹0</div>
+      <div class="meta"><span id="sCount">0 things bought</span>
+      <label>Group budget ₹ <input id="sBudget" type="number" min="0" inputmode="numeric" placeholder="optional"></label></div>
+      <div class="bud" id="sBar"><i></i></div>
+      <p class="meta" id="sLeft" style="margin:6px 0 0"></p>
+    </div>
+    <div class="panel"><h2>Who owes who</h2><p class="you" id="sYou"></p><div id="sSettle"></div><p class="meta">Tap “Mark paid” once the money has actually moved, and the balances update for everyone.</p></div>
+    <div class="panel"><h2>Everyone’s spending</h2><div id="sBal"></div></div>
+    <div class="panel"><h2>Where the group’s money went</h2><div class="donut" id="sChart"></div></div>
+    <div class="panel"><h2>Everything bought</h2><div id="sList"></div></div>
+  </div>
+
   <div class="panel"><h2>Add what you bought</h2>
     <form class="sform" id="sForm">
       <input class="wide" id="eName" placeholder="What did you buy? (e.g. kurti, Church Street coffee)" required aria-label="What did you buy">
@@ -189,10 +227,6 @@ button.chip.on{background:var(--rose);color:#fff;border-color:var(--rose)}
       <button>Add to list</button>
     </form>
   </div>
-  <div class="panel"><h2>Who owes who</h2><p class="you" id="sYou"></p><div id="sSettle"></div><p class="meta">Tap “Mark paid” once the money has actually moved, and the balances update for everyone.</p></div>
-  <div class="panel"><h2>Everyone’s spending</h2><div id="sBal"></div></div>
-  <div class="panel"><h2>By category</h2><div class="chips" id="sCats"></div></div>
-  <div class="panel"><h2>Everything bought</h2><div id="sList"></div></div>
 </section>
 
 <section id="shopView" hidden>
@@ -367,7 +401,7 @@ const $=id=>document.getElementById(id);
 const rs=n=>"₹"+Math.round(n).toLocaleString("en-IN");
 const CATS={"Shopping":"🛍️","Food":"🍽️","Cafe":"☕","Drinks":"🍸","Cab":"🚕","Stay":"🏡","Other":"✨"};
 const DAYN={1:"Day 1",2:"Day 2",3:"Extra"};
-let store=null,ME=null,TAB="p",FILT="all",SYNC="demo",SYNC_ERR="";
+let store=null,ME=null,TAB="p",SUB="m",FILT="all",SYNC="demo",SYNC_ERR="";
 let EXP=[],SHOP=[],STOPS=[],MEM=[],SET={},TRANSFERS=[];
 
 function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},3500)}
@@ -463,8 +497,50 @@ function settleUp(net){
   }
   return out;
 }
+const PIE=["#e0407b","#b57cf0","#f3a93c","#2fb6a0","#ff8fb3","#6c8ff5","#d9c6fa"];
+function donut(by,total,el,empty){
+  const ent=Object.entries(by).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  if(!ent.length){el.innerHTML='<p class="empty">'+empty+'</p>';return}
+  const R=54,C=2*Math.PI*R;let off=0;
+  const arcs=ent.map(([c,v],i)=>{
+    const len=v/total*C,d=`<circle r="${R}" cx="70" cy="70" fill="none" stroke="${PIE[i%PIE.length]}" stroke-width="22" stroke-dasharray="${len-1.5} ${C-len+1.5}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"></circle>`;
+    off+=len;return d;
+  }).join("");
+  el.innerHTML=`<svg viewBox="0 0 140 140" width="140" height="140" role="img" aria-label="Spending by category">
+  <circle r="${R}" cx="70" cy="70" fill="none" stroke="#f9dce6" stroke-width="22"></circle>${arcs}
+  <text x="70" y="68" text-anchor="middle" class="dmid">${rs(total)}</text>
+  <text x="70" y="82" text-anchor="middle" class="dsub">total</text></svg>
+  <div class="key">${ent.map(([c,v],i)=>`<div class="krow"><i style="background:${PIE[i%PIE.length]}"></i><span>${CATS[c]||"✨"} ${esc(c)}</span><b>${rs(v)}</b><em>${Math.round(v/total*100)}%</em></div>`).join("")}</div>`;
+}
 function renderSpend(){
-  const its=EXP.filter(e=>e.type!=="settle"),tot=its.reduce((a,b)=>a+b.amt,0),bud=+SET.budget||0;
+  const its=EXP.filter(e=>e.type!=="settle"),tot=its.reduce((a,b)=>a+b.amt,0);
+  const {net,paid,owed}=balances();
+
+  /* ---------------- Just me ---------------- */
+  const mine=its.filter(e=>((e.split&&e.split.length)?e.split:MEMBERS).includes(ME));
+  const myShare=mine.reduce((a,e)=>a+e.amt/(((e.split&&e.split.length)?e.split:MEMBERS).length),0);
+  const myPaid=paid[ME]||0,myNet=net[ME]||0;
+  const myBud=+((SET.budgets||{})[ME])||0;
+  $("mTotal").textContent=rs(myShare);
+  $("mCount").textContent=mine.length?`your share of ${mine.length} thing${mine.length===1?"":"s"}`:"this trip has cost you nothing yet";
+  if(document.activeElement!==$("mBudget"))$("mBudget").value=myBud||"";
+  $("mBar").firstElementChild.style.width=(myBud?Math.min(100,myShare/myBud*100):0)+"%";
+  $("mBar").classList.toggle("over",!!myBud&&myShare>myBud);
+  $("mLeft").textContent=myBud?(myShare>myBud?rs(myShare-myBud)+" over your own budget":rs(myBud-myShare)+" left of your own budget"):"Set your own budget to see what’s left.";
+  $("mFacts").innerHTML=`<div class="bal"><span>Money you’ve actually paid out</span><b>${rs(myPaid)}</b></div>
+  <div class="bal"><span>Your fair share of everything</span><b>${rs(myShare)}</b></div>
+  <div class="bal"><span>Where that leaves you</span><b class="${myNet>=0.5?"pos":myNet<=-0.5?"neg":""}">${myNet>=0.5?"owed "+rs(myNet):myNet<=-0.5?"you owe "+rs(-myNet):"all square"}</b></div>
+  <div class="bal"><span>Your share of the group total</span><b>${tot?Math.round(myShare/tot*100):0}%</b></div>`;
+  const myBy={};mine.forEach(e=>{const n=((e.split&&e.split.length)?e.split:MEMBERS).length;myBy[e.cat]=(myBy[e.cat]||0)+e.amt/n});
+  donut(myBy,myShare,$("mChart"),"Nothing yet. Add something and your chart appears here.");
+  const myList=its.filter(e=>e.who===ME);
+  $("mList").innerHTML=myList.length?myList.slice().reverse().map(i=>{
+    const n=((i.split&&i.split.length)?i.split:MEMBERS).length;
+    return `<div class="exp"><span class="em">${CATS[i.cat]||"✨"}</span><div class="t"><b>${esc(i.name)}</b><span>${esc(i.cat)} · split ${n} way${n===1?"":"s"} · your bit ${rs(i.amt/n)}</span></div><span class="a">${rs(i.amt)}</span><button data-del="${i.id}" aria-label="Delete ${esc(i.name)}">×</button></div>`;
+  }).join(""):'<p class="empty">You haven’t paid for anything yet.</p>';
+
+  /* ---------------- The split ---------------- */
+  const bud=+SET.budget||0;
   $("sTotal").textContent=rs(tot);
   $("sCount").textContent=its.length+(its.length===1?" thing bought":" things bought");
   if(document.activeElement!==$("sBudget"))$("sBudget").value=bud||"";
@@ -472,12 +548,9 @@ function renderSpend(){
   $("sBar").classList.toggle("over",!!bud&&tot>bud);
   $("sLeft").textContent=bud?(tot>bud?rs(tot-bud)+" over budget":rs(bud-tot)+" left in budget"):"Set a group budget to track what’s left.";
   const by={};its.forEach(i=>by[i.cat]=(by[i.cat]||0)+i.amt);
-  $("sCats").innerHTML=Object.keys(by).length?Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<span class="chip">${CATS[c]||"✨"} ${esc(c)} ${rs(v)}</span>`).join(""):'<p class="empty">Nothing yet.</p>';
-
-  const {net,paid,owed}=balances();
+  donut(by,tot,$("sChart"),"Nothing yet.");
   TRANSFERS=settleUp(net);
-  const mine=net[ME]||0;
-  $("sYou").textContent=!its.length?"":mine>=0.5?`You’re owed ${rs(mine)}`:mine<=-0.5?`You owe ${rs(-mine)}`:"You’re all square 🎉";
+  $("sYou").textContent=!its.length?"":myNet>=0.5?`You’re owed ${rs(myNet)}`:myNet<=-0.5?`You owe ${rs(-myNet)}`:"You’re all square 🎉";
   $("sSettle").innerHTML=TRANSFERS.length?TRANSFERS.map((t,i)=>`<div class="bal"><span><b>${esc(t.from)}</b> owes <b>${esc(t.to)}</b></span><span class="btns"><b class="neg">${rs(t.amt)}</b><button data-settle="${i}">Mark paid</button></span></div>`).join(""):`<p class="empty">${its.length?"Everyone’s square. Nobody owes anything 🎉":"Add an expense to see who owes who."}</p>`;
   $("sBal").innerHTML=its.length?Object.keys(net).map(n=>{
     const d=net[n],tag=d>=0.5?`<b class="pos">gets back ${rs(d)}</b>`:d<=-0.5?`<b class="neg">owes ${rs(-d)}</b>`:`<b>all square</b>`;
@@ -488,25 +561,13 @@ function renderSpend(){
     :`<div class="exp"><span class="em">${CATS[i.cat]||"✨"}</span><div class="t"><b>${esc(i.name)}</b><span>${esc(i.cat)} · paid by ${esc(i.who)} · split ${(i.split&&i.split.length)||MEMBERS.length} way${((i.split&&i.split.length)||MEMBERS.length)===1?"":"s"}</span></div><span class="a">${rs(i.amt)}</span><button data-del="${i.id}" aria-label="Delete ${esc(i.name)}">×</button></div>`
   ).join(""):'<p class="empty">Your haul will show up here.</p>';
 }
-$("sForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const amt=parseFloat($("eAmt").value);if(!(amt>=0))return;
-  const split=[...$("eSplit").querySelectorAll("input:checked")].map(i=>i.value);
-  if(!split.length){toast("Pick at least one person to split with");return}
-  const o={type:"exp",name:$("eName").value.trim(),amt,cat:$("eCat").value,who:$("eWho").value,split};
-  e.target.reset();$("eWho").value=ME||MEMBERS[0];$("eName").focus();
-  try{await store.add("expenses",o)}catch(err){toast("Couldn’t save: "+err.message)}
-});
-$("spendView").addEventListener("click",async e=>{
-  const del=e.target.dataset.del,st=e.target.dataset.settle;
-  if(del){if(confirm("Delete this entry for everyone?"))store.del("expenses",del);return}
-  if(st!==undefined){
-    const t=TRANSFERS[+st];if(!t)return;
-    const amt=Math.round(t.amt);
-    if(confirm(`Record that ${t.from} paid ${t.to} ${rs(amt)}?`))store.add("expenses",{type:"settle",from:t.from,to:t.to,amt,by:ME});
-  }
-});
+function sub(k){
+  SUB=k;$("mineView").hidden=k!=="m";$("groupView").hidden=k!=="g";
+  $("subM").setAttribute("aria-selected",k==="m");$("subG").setAttribute("aria-selected",k==="g");
+}
+$("subM").onclick=()=>sub("m");$("subG").onclick=()=>sub("g");
 $("sBudget").onchange=e=>store.set("settings","trip",{ts:0,budget:Math.max(0,parseFloat(e.target.value)||0)});
+$("mBudget").onchange=e=>store.set("settings","trip",{ts:0,budgets:Object.assign({},SET.budgets||{},{[ME]:Math.max(0,parseFloat(e.target.value)||0)})});
 
 /* ============================== shopping ============================== */
 function shopRow(i){
