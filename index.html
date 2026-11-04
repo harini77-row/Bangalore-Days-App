@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bangalore Days</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--blush:#fff0f4;--rose:#e0407b;--rose2:#ff8fb3;--plum:#3b1d3d;--mute:#8a6a85;--lilac:#d9c6fa;--gold:#f3cf8e;--card:rgba(255,255,255,.78);--line:#f3cfdc}
+*{box-sizing:border-box}
+body{margin:0;color:var(--plum);font:16px/1.55 "DM Sans",system-ui,sans-serif;background:var(--blush);min-height:100vh;overflow-x:hidden}
+.blobs{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.blobs i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.7;animation:drift 18s ease-in-out infinite alternate}
+.blobs i:nth-child(1){width:380px;height:380px;background:#ffc1d6;top:-80px;left:-90px}
+.blobs i:nth-child(2){width:340px;height:340px;background:var(--lilac);top:30%;right:-120px;animation-delay:-6s}
+.blobs i:nth-child(3){width:320px;height:320px;background:#ffe2b8;bottom:-90px;left:15%;animation-delay:-11s}
+@keyframes drift{to{transform:translate(50px,70px) scale(1.15)}}
+main{max-width:720px;margin:0 auto;padding:26px 16px 90px}
+h1,h2{font-family:"Cormorant Garamond",Georgia,serif;margin:0}
+h1{font-size:clamp(2.6rem,11vw,4.2rem);line-height:.95;font-weight:600;font-style:italic;letter-spacing:-.01em;color:var(--plum)}
+h1 small{display:block;font:500 .95rem "DM Sans",sans-serif;font-style:normal;letter-spacing:.02em;color:var(--rose);margin-top:10px}
+.sub{color:var(--mute);margin:10px 0 18px;max-width:52ch}
+.weather{display:flex;gap:12px;align-items:center;background:linear-gradient(120deg,#fff6df,#ffe4ec);border:1px solid var(--gold);padding:12px 16px;border-radius:999px 999px 999px 999px;font-size:.92rem}
+.weather .sun{font-size:1.9rem;animation:spin 14s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bar{position:sticky;top:8px;z-index:5;margin:16px 0 6px;padding:12px 14px;background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 28px rgba(224,64,123,.15)}
+.track{position:relative;height:14px;border-radius:99px;background:#f9dce6}
+#fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--rose2),var(--rose),#b57cf0);background-size:200% 100%;animation:shine 3s linear infinite;transition:width .5s cubic-bezier(.3,1.4,.5,1)}
+@keyframes shine{to{background-position:-200% 0}}
+#spark{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);font-size:1.25rem;transition:left .5s cubic-bezier(.3,1.4,.5,1)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:.88rem}
+#msg{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.15rem;color:var(--rose);font-weight:600}
+#total{color:var(--mute)}
+button{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--plum);border-radius:99px;padding:6px 14px;transition:transform .15s,background .15s}
+button:hover{background:var(--rose);color:#fff;transform:translateY(-1px)}
+button:active{transform:scale(.95)}
+:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+details{background:var(--card);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:24px;margin:14px 0;transition:box-shadow .2s,transform .2s}
+details:hover{box-shadow:0 10px 30px rgba(224,64,123,.12)}
+details[open]{box-shadow:0 12px 34px rgba(181,124,240,.18)}
+details.full{background:linear-gradient(135deg,rgba(255,255,255,.9),#ffeaf1);border-color:var(--rose2)}
+summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;gap:12px}
+summary::-webkit-details-marker{display:none}
+.ic{font-size:1.5rem;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe0ea,var(--lilac));flex:none;transition:transform .3s}
+details[open] .ic{transform:rotate(-10deg) scale(1.08)}
+h2{font-size:1.5rem;font-weight:600;flex:1;line-height:1.1}
+.cnt{font-size:.8rem;background:#fff;border:1px solid var(--line);border-radius:99px;padding:2px 10px;color:var(--mute);white-space:nowrap}
+.cnt.done{background:var(--rose);color:#fff;border-color:var(--rose)}
+.chev{color:var(--rose);transition:transform .25s}
+details[open] .chev{transform:rotate(180deg)}
+.note{margin:0;padding:0 20px 8px;color:var(--mute);font-size:.9rem;font-style:italic}
+ul{list-style:none;margin:0;padding:0 10px 6px}
+li label{display:flex;gap:12px;align-items:flex-start;padding:9px 10px;border-radius:14px;cursor:pointer;transition:background .15s}
+li label:hover{background:rgba(255,143,179,.14)}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:24px;height:24px;flex:none;margin:0;border:2px solid var(--rose2);border-radius:50%;background:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s}
+input[type=checkbox]::after{content:"♥";color:#fff;font-size:13px;transform:scale(0);transition:transform .25s cubic-bezier(.3,1.8,.5,1)}
+input[type=checkbox]:checked{background:var(--rose);border-color:var(--rose)}
+input[type=checkbox]:checked::after{transform:scale(1)}
+li.pop input{animation:pop .4s}
+@keyframes pop{40%{transform:scale(1.4)}}
+li input:checked+span{text-decoration:line-through;text-decoration-color:var(--rose2);color:var(--mute)}
+.add{display:flex;gap:8px;padding:6px 16px 16px}
+.add input{flex:1;min-width:0;font:inherit;padding:8px 14px;border:1px dashed var(--rose2);border-radius:99px;background:rgba(255,255,255,.7);color:var(--plum)}
+.hide-done li.is-done{display:none}
+.bit{position:fixed;z-index:50;pointer-events:none;font-size:1.3rem;animation:fall 1.4s ease-out forwards}
+@keyframes fall{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.tabs{display:flex;gap:6px;margin:16px 0 4px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:99px}
+.tabs button{flex:1;border:0;background:transparent;padding:10px;font-weight:700}
+.tabs button[aria-selected=true]{background:linear-gradient(90deg,var(--rose2),var(--rose));color:#fff;box-shadow:0 6px 16px rgba(224,64,123,.3)}
+[hidden]{display:none!important}
+.panel{background:var(--card);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:24px;padding:18px;margin:14px 0}
+.big{font:600 3rem/1 "Cormorant Garamond",serif;font-style:italic;color:var(--rose)}
+.panel h2{font-size:1.4rem;margin-bottom:10px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--mute);font-size:.9rem;margin-top:8px;align-items:center}
+.meta input{width:84px;font:inherit;padding:4px 10px;border:1px dashed var(--rose2);border-radius:99px;background:#fff;color:var(--plum)}
+.bud{height:10px;border-radius:99px;background:#f9dce6;margin-top:12px;overflow:hidden}
+.bud i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--rose2),var(--rose));transition:width .5s}
+.bud.over i{background:#c0264f}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:.88rem}
+.sform{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sform input,.sform select{font:inherit;padding:9px 12px;border:1px dashed var(--rose2);border-radius:14px;background:#fff;color:var(--plum);min-width:0;width:100%}
+.sform .wide{grid-column:1/-1}
+.sform button{grid-column:1/-1;background:linear-gradient(90deg,var(--rose2),var(--rose));color:#fff;border:0;padding:11px;font-weight:700}
+.exp{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.exp:last-child{border:0}
+.exp .em{font-size:1.4rem}
+.exp .t{flex:1;min-width:0}
+.exp .t b{display:block;overflow-wrap:anywhere}
+.exp .t span{font-size:.82rem;color:var(--mute)}
+.exp .a{font-weight:700;white-space:nowrap}
+.exp button{padding:2px 9px;line-height:1.2}
+.bal{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);font-size:.95rem}
+.bal b.pos{color:#1e8e5a}.bal b.neg{color:#c0264f}
+.empty{color:var(--mute);font-style:italic;margin:4px 0}
+
+/* ===== Bangalore Days additions (same palette, same shapes) ===== */
+.tabs button{padding:8px 2px;font-size:.74rem;line-height:1.3}
+.tabs button span{display:block;font-size:1.2rem}
+.sform textarea{font:inherit;padding:9px 12px;border:1px dashed var(--rose2);border-radius:14px;background:#fff;color:var(--plum);min-width:0;width:100%;resize:vertical}
+.chip.pick{display:flex;align-items:center;gap:8px;cursor:pointer}
+button.chip{cursor:pointer}
+button.chip.on{background:var(--rose);color:#fff;border-color:var(--rose)}
+.you{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:600;font-size:1.3rem;margin:0 0 8px;color:var(--rose)}
+.bal .btns{display:flex;gap:8px;align-items:center}
+.btn{display:inline-block;font-size:.85rem;border:1px solid var(--line);background:#fff;color:var(--plum);border-radius:99px;padding:6px 14px;text-decoration:none;transition:transform .15s,background .15s}
+.btn:hover{background:var(--rose);color:#fff;transform:translateY(-1px)}
+.status{margin:12px 2px 0;font-size:.85rem}
+.status button{padding:2px 10px;font-size:.78rem}
+.map{width:100%;height:260px;border:1px solid var(--line);border-radius:20px;background:#fff}
+.dayhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.dayhead h2{margin:0}
+.stop{position:relative;padding:0 0 18px 48px}
+.stop:last-child{padding-bottom:0}
+.stop::before{content:"";position:absolute;left:17px;top:38px;bottom:-2px;border-left:2px dashed var(--rose2)}
+.stop:last-child::before{display:none}
+.node{position:absolute;left:0;top:0;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--rose2),var(--rose));color:#fff;font-weight:700;box-shadow:0 6px 14px rgba(224,64,123,.28)}
+.stop.visited .node{background:#1e8e5a;box-shadow:0 6px 14px rgba(30,142,90,.25)}
+.stop b{display:block;overflow-wrap:anywhere}
+.stop.visited b{text-decoration:line-through;text-decoration-color:var(--rose2);color:var(--mute)}
+.stop .sub2{font-size:.85rem;color:var(--mute)}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.acts button{padding:3px 11px;font-size:.8rem}
+.filebtn{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--rose2);border-radius:14px;background:#fff;cursor:pointer;padding:9px 12px;color:var(--mute);min-width:0}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs img{width:56px;height:56px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.album{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.mem{background:var(--card);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.mem img.ph{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:zoom-in;background:#f9dce6}
+.mem .mt{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.mem .mt p{margin:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:600;font-size:1.1rem;line-height:1.25;overflow-wrap:anywhere}
+.mem .mt span{font-size:.78rem;color:var(--mute)}
+.mem.txt{grid-column:1/-1;background:linear-gradient(135deg,#fff6df,#ffe4ec);border-color:var(--gold)}
+.mem .mt button{align-self:flex-start;padding:1px 9px;margin-top:2px}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(59,29,61,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px}
+.modal .panel{background:#fff;max-width:420px;width:100%;text-align:center}
+.lb{flex-direction:column;gap:12px;text-align:center;color:#fff;cursor:zoom-out}
+.lb:not([hidden]){display:flex;align-items:center;justify-content:center}
+.lb img{max-width:100%;max-height:72vh;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.lb p{margin:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.3rem}
+.lb span{font-size:.85rem;opacity:.85}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:120;background:var(--plum);color:#fff;padding:10px 18px;border-radius:99px;font-size:.9rem;max-width:90vw;box-shadow:0 10px 28px rgba(59,29,61,.3)}
+</style>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+<main>
+<h1>Bangalore Days<small>2 days · 4 girls · 1 very organised bag</small></h1>
+<p class="sub">Your packing ticks save on your own phone. Spending, shopping, the route and the album are shared live with all four of you.</p>
+<div class="weather"><span class="sun">☀️</span><span><b>Early November:</b> about 19–28°C, humid, cooler evenings. Light rain is common, so pack for sunshine and a shower. Check the forecast the night before.</span></div>
+<p class="status" id="status"></p>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="tabP" aria-selected="true"><span>🧳</span>Packing</button>
+  <button role="tab" id="tabS" aria-selected="false"><span>💸</span>Spending</button>
+  <button role="tab" id="tabH" aria-selected="false"><span>🛍️</span>Shopping</button>
+  <button role="tab" id="tabR" aria-selected="false"><span>📍</span>Route</button>
+  <button role="tab" id="tabA" aria-selected="false"><span>📸</span>Album</button>
+</div>
+
+<div id="packView">
+<div class="bar">
+  <div class="track" role="progressbar" aria-label="Packing progress" aria-valuemin="0" aria-valuemax="100" id="pb"><div id="fill"></div><span id="spark" aria-hidden="true">💖</span></div>
+  <div class="row"><span id="msg"></span><span id="total">0 of 0 packed</span></div>
+  <div class="row"><span></span><span><button id="hide">Hide packed</button> <button id="reset">Reset</button></span></div>
+</div>
+<div id="app"></div>
+</div>
+
+<section id="spendView" hidden>
+  <div class="panel">
+    <div class="big" id="sTotal">₹0</div>
+    <div class="meta"><span id="sCount">0 things bought</span>
+    <label>Group budget ₹ <input id="sBudget" type="number" min="0" inputmode="numeric" placeholder="optional"></label></div>
+    <div class="bud" id="sBar"><i></i></div>
+    <p class="meta" id="sLeft" style="margin:6px 0 0"></p>
+  </div>
+  <div class="panel"><h2>Add what you bought</h2>
+    <form class="sform" id="sForm">
+      <input class="wide" id="eName" placeholder="What did you buy? (e.g. kurti, Church Street coffee)" required aria-label="What did you buy">
+      <input id="eAmt" type="number" min="0" step="any" inputmode="decimal" placeholder="Amount ₹" required aria-label="Amount in rupees">
+      <select id="eCat" aria-label="Category"></select>
+      <select class="wide" id="eWho" aria-label="Who paid"></select>
+      <div class="wide"><p class="meta" style="margin:0 0 6px">Split between</p><div class="chips" id="eSplit"></div></div>
+      <button>Add to list</button>
+    </form>
+  </div>
+  <div class="panel"><h2>Who owes who</h2><p class="you" id="sYou"></p><div id="sSettle"></div><p class="meta">Tap “Mark paid” once the money has actually moved, and the balances update for everyone.</p></div>
+  <div class="panel"><h2>Everyone’s spending</h2><div id="sBal"></div></div>
+  <div class="panel"><h2>By category</h2><div class="chips" id="sCats"></div></div>
+  <div class="panel"><h2>Everything bought</h2><div id="sList"></div></div>
+</section>
+
+<section id="shopView" hidden>
+  <div class="panel">
+    <div class="big" id="hCount">0 bought</div>
+    <div class="meta"><span id="hSub">0 still to buy</span></div>
+    <div class="bud"><i id="hBar"></i></div>
+  </div>
+  <div class="panel"><h2>Add to the list</h2>
+    <form class="sform" id="hForm">
+      <input class="wide" id="hName" placeholder="What do you want to buy? (e.g. cotton kurti, silk saree)" required aria-label="What to buy">
+      <input id="hWhere" list="stores" placeholder="Where? (e.g. Chickpet)" aria-label="Where to buy it">
+      <input id="hFor" placeholder="For whom?" aria-label="Who is it for">
+      <datalist id="stores"><option value="Commercial Street"><option value="Chickpet"><option value="Orion Mall"><option value="Church Street"></datalist>
+      <button>Add item</button>
+    </form>
+  </div>
+  <div class="panel"><h2>Still to buy</h2><div id="hTodo"></div></div>
+  <div class="panel"><h2>Bought</h2><div id="hDone"></div></div>
+</section>
+
+<section id="routeView" hidden>
+  <div class="panel"><h2>Where we’re going</h2>
+    <iframe id="mapFrame" class="map" title="Map of the selected stop" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <p class="meta" id="mapCap">Tap “Show on map” on any stop.</p>
+  </div>
+  <div id="rList"></div>
+  <div class="panel"><h2>Add a stop</h2>
+    <form class="sform" id="rForm">
+      <input class="wide" id="rName" placeholder="Place (e.g. Toit, Indiranagar)" required aria-label="Place name">
+      <select id="rDay" aria-label="Day"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Extra</option></select>
+      <input id="rTime" type="time" aria-label="Time">
+      <input class="wide" id="rNote" placeholder="Note (optional)" aria-label="Note">
+      <button>Add stop</button>
+    </form>
+  </div>
+</section>
+
+<section id="albumView" hidden>
+  <div class="panel">
+    <div class="big" id="aCount">0 memories</div>
+    <div class="meta"><span id="aSub">Nothing here yet. Be the first.</span></div>
+  </div>
+  <div class="panel"><h2>Add to the journal</h2>
+    <form class="sform" id="mForm">
+      <textarea class="wide" id="mText" rows="2" placeholder="A caption or a little diary note (optional)" aria-label="Caption"></textarea>
+      <select id="mDay" aria-label="Day"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Extra</option></select>
+      <label class="filebtn">📷 <span id="mFileTxt">Choose photos</span><input type="file" id="mFile" accept="image/*" multiple hidden></label>
+      <div class="wide thumbs" id="mPrev"></div>
+      <button id="mBtn">Add to album</button>
+    </form>
+  </div>
+  <div class="chips" id="aFilter"></div>
+  <div class="album" id="aGrid"></div>
+</section>
+</main>
+
+<div class="modal" id="who" hidden><div class="panel"><div class="big" style="font-size:2.2rem">Who’s this?</div><p class="sub" style="margin:8px auto 14px">Pick your name so spending and photos are saved under you.</p><div class="chips" id="whoChips" style="justify-content:center"></div></div></div>
+<div class="modal lb" id="lb" hidden><img id="lbImg" alt=""><p id="lbCap"></p><span id="lbMeta"></span></div>
+<div class="toast" id="toast" hidden></div>
+<script type="module">
+/* =====================================================================
+   1) PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps)
+   2) PUT YOUR FOUR NAMES IN MEMBERS (spelled exactly how you want them shown)
+   Leave the YOUR_ placeholders and the site runs in demo mode (this device only).
+   ===================================================================== */
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyDiLYY0r8_K47_IgCisx7yk8-zxYSzPGsA",
+  authDomain:"bangalore-days.firebaseapp.com",
+  projectId:"bangalore-days",
+  storageBucket:"bangalore-days.firebasestorage.app",
+  messagingSenderId:"659472357554",
+  appId:"1:659472357554:web:1c7be4ab14ebebc95691ab"
+};
+const MEMBERS=["Chandu","Nivi","Harini","Shree"];
+const LIVE=!FIREBASE_CONFIG.apiKey.startsWith("YOUR_");
+/* ===================================================================== */
+
+const DATA=[
+{id:"docs",title:"Documents and money",note:"Keep these in one small pouch in your day bag.",items:["Government photo ID for everyone (Aadhaar, licence or passport)","Airbnb booking confirmation and host phone number (screenshot it)","Travel tickets (train, bus or flight)","Cash in small notes (₹500 or less) for autos and street shops","Debit and credit cards","UPI apps set up and working","Small coin purse or pouch"]},
+{id:"tech",title:"Phone and utilities",note:"Koramangala Airbnb sockets are usually 2-pin Indian plugs.",items:["Phone","Phone chargers","Power bank (charged)","Extension board or multi-plug (saves fighting over sockets)","Earphones or headphones","Offline Google Maps for Bengaluru","Ola, Uber and Rapido installed","Metro app or card (Namma Metro)","Zomato or Swiggy Dineout for restaurant offers","Camera and charger (optional)","Small torch (optional)"]},
+{id:"clothes",title:"Clothes",note:"Light cotton in the day. Add one layer for evenings and rain.",items:["Day outfits ×2 (light cotton, breathable)","Church Street outfit (Day 1, 4–7pm)","Night-out outfit for Bob’s (Day 1)","Night-out outfit for the pub (Day 2)","Comfortable outfit for Commercial Street and shopping","Light jacket, cardigan or hoodie for cool evenings","Jeans or long pants (1 pair)","Shorts or leggings","Lounge wear or pyjamas ×2","Innerwear ×3 sets (pack extra, humid weather)","Bras, sports bra and spare","Socks ×3 pairs","Thin shawl or scarf","Outfit for the journey back","Spare top in case of spills or rain"]},
+{id:"shoes",title:"Footwear",note:"Shoes, sandals and heels.",items:["Sneakers or shoes (for Orion Mall, Commercial Street and walking)","Sandals or slippers (for Airbnb and casual wear)","Heels (for Bob’s and the pub, keep them in a shoe bag)","Shoe bags or plastic covers so shoes don’t touch clothes","Blister plasters","Gel insoles or heel grips","Quick-dry socks or no-show socks for sneakers","Small towel or wipes for wet shoes","Plan: wear sneakers on the way and carry heels"]},
+{id:"acc",title:"Accessories",items:["Sunglasses","Watch","Jewellery for nights (in a small pouch)","Hair accessories (clips, bands, scrunchies)","Cap or hat","Day bag or sling bag","Clutch or small bag for nights out","Belt","Spectacles or contact lenses with solution and spare pair"]},
+{id:"toiletries",title:"Toiletries",items:["Toothbrush and toothpaste","Shampoo and conditioner (travel sizes)","Body wash or soap","Towel (some Airbnbs don’t provide)","Face towel","Deodorant or roll-on","Perfume","Razor or hair removal","Sanitary pads, tampons or menstrual cup (pack extra)","Hand sanitiser","Wet wipes and tissues","Hair comb and brush","Hair dryer or straightener (ask host first)","Cotton buds","Lip balm","Small mirror","Toiletry bag (waterproof)"]},
+{id:"skin",title:"Skincare",note:"Humid weather. Keep it light.",items:["Cleanser or face wash","Light moisturiser (gel type works well in humid weather)","Sunscreen SPF 30 or higher (Bengaluru sun is strong)","Toner (optional)","Serum (optional)","Night cream","Micellar water or makeup remover","Cotton pads","Face mist","Under-eye cream or patches (optional)","Body lotion (small)","Hand cream","Sheet masks (optional)"]},
+{id:"makeup",title:"Makeup",note:"Humid evenings, so go for long-wear and waterproof where you can.",items:["Primer","Foundation or tinted moisturiser","Concealer","Setting powder or setting spray","Compact for touch-ups","Blush","Bronzer or highlighter","Eyeshadow palette","Eyeliner (waterproof)","Kajal","Mascara (waterproof)","Eyebrow pencil or gel","Lipsticks (day and night shades)","Lip gloss","Makeup brushes and sponge","Eyelash curler","False lashes and glue (optional)","Nail polish and remover","Oil-blotting sheets","Makeup bag"]},
+{id:"hair",title:"Hair",items:["Hair serum or oil","Dry shampoo (optional)","Hair spray or gel","Heat protectant spray","Hair ties and pins","Straightener or curler (ask the host if available)"]},
+{id:"health",title:"Health and first aid",items:["Any regular prescription medicines (with enough doses)","Paracetamol or pain relief","Period pain relief","Antacid and ORS sachets","Anti-diarrhoea and anti-nausea tablets","Cold and cough tablets","Antiseptic cream and plasters","Mosquito repellent (Bengaluru evenings)","Insect bite relief cream","Hangover care: water, electrolytes, paracetamol (the morning after Bob’s)","Reusable water bottle","Masks (optional)","Allergy medicine, if you use one"]},
+{id:"rain",title:"Rain and weather",items:["Compact umbrella","Light raincoat or poncho","Waterproof pouch for phone and wallet","Plastic bags for wet clothes or shoes","Extra pair of socks in the day bag"]},
+{id:"shop",title:"Shopping",note:"Commercial Street and Chickpet. Bring a bag so you can carry what you buy.",items:["Foldable duffel or extra bag for purchases","Reusable shopping bags","Shopping list (clothes, sarees, accessories, gifts)","Budget for each person written down","Measurements or size notes for family orders","Bargaining mindset: start at half price at Commercial Street and Chickpet","Space in the main bag for new things","Cash for small shops that don’t take UPI","Check what’s closed on the day (some Chickpet shops close on Sundays)"]},
+{id:"airbnb",title:"Airbnb and group",note:"Decide who brings what so you don’t carry four of everything.",items:["Confirm check-in time with the host (12:30 to 1:30pm)","Save the host’s number and address on every phone","Check what’s provided: towels, soap, kettle, hair dryer, Wi-Fi","Bring one set of shared items: kettle bags, tea or coffee, snacks","Share a single group chat and split-expense app (Splitwise)","House rules: no loud noise after 10pm, no smoking indoors","Spare key or check-in code shared with everyone","Laundry bag for dirty clothes","Room freshener or small candle (optional)"]},
+{id:"food",title:"Food and snacks",items:["Light snacks for the journey","Biscuits or granola bars for the Airbnb","Water bottles","Chewing gum or mints","Small trash bag"]},
+{id:"leave",title:"Before you leave home",items:["Charge phones and power bank","Check the weather forecast","Lock windows and doors, turn off the gas","Tell family your plan and Airbnb address","Book your return transport","Pre-book popular restaurants if possible","Download offline maps and tickets","Confirm everyone’s packing responsibilities"]}
+];
+const ICON={docs:"🪪",tech:"🔌",clothes:"👗",shoes:"👠",acc:"💍",toiletries:"🧴",skin:"🧖‍♀️",makeup:"💄",hair:"💇‍♀️",health:"🩹",rain:"☂️",shop:"🛍️",airbnb:"🏡",food:"🍫",leave:"✅"};
+const MSG=[[0,"Let’s get packing, gorgeous"],[25,"Good start, keep going"],[50,"Halfway there, babe"],[75,"Almost ready to slay"],[100,"Packed and fabulous"]];
+const KEY="blr-trip-v1";
+let S={done:{},custom:{},hide:false};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const app=document.getElementById("app");
+const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function items(sec){return sec.items.map((t,i)=>({id:sec.id+i,t})).concat((S.custom[sec.id]||[]).map(c=>({id:c.id,t:c.t})))}
+function render(){
+  const open=[...app.querySelectorAll("details")].filter(d=>d.open).map(d=>d.dataset.id);
+  app.innerHTML=DATA.map(sec=>{
+    const list=items(sec);
+    return `<details data-id="${sec.id}" ${open.includes(sec.id)||!open.length&&sec.id==="docs"?"open":""}>
+<summary><span class="ic">${ICON[sec.id]||"✨"}</span><h2>${sec.title}</h2><span class="cnt"></span><span class="chev">⌄</span></summary>
+${sec.note?`<p class="note">${esc(sec.note)}</p>`:""}
+<ul>${list.map(it=>`<li class="${S.done[it.id]?"is-done":""}"><label><input type="checkbox" data-id="${it.id}" ${S.done[it.id]?"checked":""}><span>${esc(it.t)}</span></label></li>`).join("")}</ul>
+<form class="add" data-sec="${sec.id}"><input type="text" placeholder="Add your own item" aria-label="Add item to ${sec.title}"><button>Add</button></form>
+</details>`}).join("");
+  stats();
+}
+function stats(){
+  let all=0,dn=0;
+  app.querySelectorAll("details").forEach(d=>{
+    const boxes=d.querySelectorAll("input[type=checkbox]");
+    const c=[...boxes].filter(b=>b.checked).length;
+    const el=d.querySelector(".cnt"),full=c===boxes.length&&boxes.length>0;el.textContent=c+"/"+boxes.length;el.classList.toggle("done",full);d.classList.toggle("full",full);
+    all+=boxes.length;dn+=c;
+  });
+  const p=all?Math.round(dn/all*100):0;
+  document.getElementById("fill").style.width=p+"%";
+  document.getElementById("spark").style.left=p+"%";
+  document.getElementById("msg").textContent=MSG.filter(m=>p>=m[0]).pop()[1];
+  document.getElementById("pb").setAttribute("aria-valuenow",p);
+  document.getElementById("total").textContent=dn+" of "+all+" packed ("+p+"%)";
+  document.body.classList.toggle("hide-done",!!S.hide);
+  document.getElementById("hide").textContent=S.hide?"Show packed":"Hide packed";
+}
+app.addEventListener("change",e=>{
+  if(e.target.type!=="checkbox")return;
+  S.done[e.target.dataset.id]=e.target.checked;
+  const li=e.target.closest("li"),d=e.target.closest("details");
+  li.classList.toggle("is-done",e.target.checked);
+  if(e.target.checked){li.classList.add("pop");setTimeout(()=>li.classList.remove("pop"),400)}
+  const was=d.classList.contains("full");
+  save();stats();
+  if(e.target.checked&&!was&&d.classList.contains("full"))confetti(e.target);
+});
+app.addEventListener("submit",e=>{
+  e.preventDefault();
+  const f=e.target,inp=f.querySelector("input"),t=inp.value.trim();
+  if(!t)return;
+  (S.custom[f.dataset.sec]=S.custom[f.dataset.sec]||[]).push({id:"c"+Date.now(),t});
+  save();render();
+});
+function confetti(el){
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const r=el.getBoundingClientRect(),E=["💖","✨","🌸","💄","👠","🎀","💅"];
+  for(let i=0;i<18;i++){
+    const b=document.createElement("span");b.className="bit";b.textContent=E[i%E.length];
+    b.style.left=r.left+12+"px";b.style.top=r.top+"px";
+    b.style.setProperty("--x",(Math.random()*360-180)+"px");
+    b.style.setProperty("--y",(Math.random()*-220-30)+"px");
+    b.style.setProperty("--r",(Math.random()*540-270)+"deg");
+    document.body.appendChild(b);setTimeout(()=>b.remove(),1500);
+  }
+}
+document.getElementById("hide").onclick=()=>{S.hide=!S.hide;save();stats()};
+document.getElementById("reset").onclick=()=>{
+  if(confirm("Untick everything? Items you added stay.")){S.done={};save();render()}
+};
+
+render();
+
+/* ============================ shared trip data ============================ */
+const $=id=>document.getElementById(id);
+const rs=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const CATS={"Shopping":"🛍️","Food":"🍽️","Cafe":"☕","Drinks":"🍸","Cab":"🚕","Stay":"🏡","Other":"✨"};
+const DAYN={1:"Day 1",2:"Day 2",3:"Extra"};
+let store=null,ME=null,TAB="p",FILT="all",SYNC="demo",SYNC_ERR="";
+let EXP=[],SHOP=[],STOPS=[],MEM=[],SET={},TRANSFERS=[];
+
+function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},3500)}
+
+/* ---- who am I ---- */
+try{ME=localStorage.getItem("blr-me")}catch(e){}
+if(!MEMBERS.includes(ME))ME=null;
+function pickMe(){
+  $("whoChips").innerHTML=MEMBERS.map(m=>`<button class="chip" data-me="${esc(m)}">${esc(m)}</button>`).join("");
+  $("who").hidden=false;
+}
+$("whoChips").addEventListener("click",e=>{
+  const m=e.target.dataset.me;if(!m)return;
+  ME=m;try{localStorage.setItem("blr-me",m)}catch(_){}
+  $("who").hidden=true;setStatus();$("eWho").value=ME;refresh();
+});
+function setStatus(){
+  const s={live:"🟢 <b>Live</b>: everyone sees changes instantly.",demo:"🟡 <b>Demo mode</b>: saved on this device only. Add your Firebase keys to share with the group.",error:"🔴 <b>Couldn’t connect</b> ("+esc(SYNC_ERR)+"). Running on this device only."}[SYNC];
+  $("status").innerHTML=`${s}<br>You’re <b>${esc(ME||"?")}</b> <button id="switchMe">switch</button>`;
+}
+$("status").addEventListener("click",e=>{if(e.target.id==="switchMe")pickMe()});
+
+/* ---- store: Firestore when configured, localStorage otherwise ---- */
+async function makeLive(){
+  const base="https://www.gstatic.com/firebasejs/10.12.2/";
+  const [A,Au,F]=await Promise.all([import(base+"firebase-app.js"),import(base+"firebase-auth.js"),import(base+"firebase-firestore.js")]);
+  const app=A.initializeApp(FIREBASE_CONFIG);
+  await Au.signInAnonymously(Au.getAuth(app));
+  const db=F.getFirestore(app);
+  return{
+    sub(col,cb){
+      return F.onSnapshot(F.query(F.collection(db,col),F.orderBy("ts")),
+        s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),
+        err=>{console.error(err);SYNC="error";SYNC_ERR=err.code||err.message;setStatus();toast("Sync problem: "+(err.code||err.message))});
+    },
+    async add(col,o){const r=await F.addDoc(F.collection(db,col),{...o,ts:Date.now()});return r.id},
+    set(col,id,o){return F.setDoc(F.doc(db,col,id),o,{merge:true})},
+    del(col,id){return F.deleteDoc(F.doc(db,col,id))}
+  };
+}
+function makeLocal(){
+  const K="blr-local-db-v1";let D={};try{D=JSON.parse(localStorage.getItem(K)||"{}")}catch(e){}
+  const subs={};
+  const list=c=>Object.entries(D[c]||{}).map(([id,v])=>({...v,id})).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  const fire=c=>(subs[c]||[]).forEach(f=>f(list(c)));
+  const persist=()=>{try{localStorage.setItem(K,JSON.stringify(D))}catch(e){toast("This device is out of storage, so photos won’t save in demo mode")}};
+  return{
+    sub(c,cb){(subs[c]=subs[c]||[]).push(cb);cb(list(c))},
+    async add(c,o){const id="l"+Date.now()+Math.random().toString(36).slice(2,6);D[c]=D[c]||{};D[c][id]={...o,ts:Date.now()};persist();fire(c);return id},
+    async set(c,id,o){D[c]=D[c]||{};D[c][id]={...(D[c][id]||{}),...o};persist();fire(c)},
+    async del(c,id){if(D[c])delete D[c][id];persist();fire(c)}
+  };
+}
+
+/* ---- tabs ---- */
+const VIEWS={p:"packView",s:"spendView",h:"shopView",r:"routeView",a:"albumView"};
+function tab(t){
+  TAB=t;
+  for(const k in VIEWS){$(VIEWS[k]).hidden=k!==t;$("tab"+k.toUpperCase()).setAttribute("aria-selected",k===t)}
+  refresh();
+}
+for(const k in VIEWS)$("tab"+k.toUpperCase()).onclick=()=>tab(k);
+function refresh(){({s:renderSpend,h:renderShop,r:renderRoute,a:renderAlbum}[TAB]||(()=>{}))()}
+
+/* ============================== spending ============================== */
+$("eCat").innerHTML=Object.keys(CATS).map(c=>`<option>${c}</option>`).join("");
+$("eWho").innerHTML=MEMBERS.map(m=>`<option value="${esc(m)}">Paid by ${esc(m)}</option>`).join("");
+$("eSplit").innerHTML=MEMBERS.map(m=>`<label class="chip pick"><input type="checkbox" value="${esc(m)}" checked><span>${esc(m)}</span></label>`).join("");
+
+function balances(){
+  const net={},paid={},owed={};
+  MEMBERS.forEach(m=>{net[m]=0;paid[m]=0;owed[m]=0});
+  const add=(o,k,v)=>{o[k]=(o[k]||0)+v};
+  EXP.forEach(e=>{
+    if(e.type==="settle"){add(net,e.from,e.amt);add(net,e.to,-e.amt);return}
+    const sp=(e.split&&e.split.length)?e.split:MEMBERS,sh=e.amt/sp.length;
+    add(paid,e.who,e.amt);add(net,e.who,e.amt);
+    sp.forEach(m=>{add(owed,m,sh);add(net,m,-sh)});
+  });
+  return{net,paid,owed};
+}
+function settleUp(net){
+  const cr=[],de=[];
+  Object.entries(net).forEach(([n,v])=>{v=Math.round(v*100)/100;if(v>=0.5)cr.push([n,v]);else if(v<=-0.5)de.push([n,-v])});
+  cr.sort((a,b)=>b[1]-a[1]);de.sort((a,b)=>b[1]-a[1]);
+  const out=[];let i=0,j=0;
+  while(i<cr.length&&j<de.length){
+    const a=Math.min(cr[i][1],de[j][1]);
+    out.push({from:de[j][0],to:cr[i][0],amt:a});
+    cr[i][1]-=a;de[j][1]-=a;
+    if(cr[i][1]<0.5)i++;
+    if(de[j][1]<0.5)j++;
+  }
+  return out;
+}
+function renderSpend(){
+  const its=EXP.filter(e=>e.type!=="settle"),tot=its.reduce((a,b)=>a+b.amt,0),bud=+SET.budget||0;
+  $("sTotal").textContent=rs(tot);
+  $("sCount").textContent=its.length+(its.length===1?" thing bought":" things bought");
+  if(document.activeElement!==$("sBudget"))$("sBudget").value=bud||"";
+  $("sBar").firstElementChild.style.width=(bud?Math.min(100,tot/bud*100):0)+"%";
+  $("sBar").classList.toggle("over",!!bud&&tot>bud);
+  $("sLeft").textContent=bud?(tot>bud?rs(tot-bud)+" over budget":rs(bud-tot)+" left in budget"):"Set a group budget to track what’s left.";
+  const by={};its.forEach(i=>by[i.cat]=(by[i.cat]||0)+i.amt);
+  $("sCats").innerHTML=Object.keys(by).length?Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<span class="chip">${CATS[c]||"✨"} ${esc(c)} ${rs(v)}</span>`).join(""):'<p class="empty">Nothing yet.</p>';
+
+  const {net,paid,owed}=balances();
+  TRANSFERS=settleUp(net);
+  const mine=net[ME]||0;
+  $("sYou").textContent=!its.length?"":mine>=0.5?`You’re owed ${rs(mine)}`:mine<=-0.5?`You owe ${rs(-mine)}`:"You’re all square 🎉";
+  $("sSettle").innerHTML=TRANSFERS.length?TRANSFERS.map((t,i)=>`<div class="bal"><span><b>${esc(t.from)}</b> owes <b>${esc(t.to)}</b></span><span class="btns"><b class="neg">${rs(t.amt)}</b><button data-settle="${i}">Mark paid</button></span></div>`).join(""):`<p class="empty">${its.length?"Everyone’s square. Nobody owes anything 🎉":"Add an expense to see who owes who."}</p>`;
+  $("sBal").innerHTML=its.length?Object.keys(net).map(n=>{
+    const d=net[n],tag=d>=0.5?`<b class="pos">gets back ${rs(d)}</b>`:d<=-0.5?`<b class="neg">owes ${rs(-d)}</b>`:`<b>all square</b>`;
+    return `<div class="bal"><span>${esc(n)}: paid ${rs(paid[n]||0)}, share ${rs(owed[n]||0)}</span>${tag}</div>`;
+  }).join(""):'<p class="empty">Nothing yet.</p>';
+  $("sList").innerHTML=EXP.length?EXP.slice().reverse().map(i=>i.type==="settle"
+    ?`<div class="exp"><span class="em">🤝</span><div class="t"><b>${esc(i.from)} paid ${esc(i.to)} back</b><span>Settled up</span></div><span class="a">${rs(i.amt)}</span><button data-del="${i.id}" aria-label="Delete this payment">×</button></div>`
+    :`<div class="exp"><span class="em">${CATS[i.cat]||"✨"}</span><div class="t"><b>${esc(i.name)}</b><span>${esc(i.cat)} · paid by ${esc(i.who)} · split ${(i.split&&i.split.length)||MEMBERS.length} way${((i.split&&i.split.length)||MEMBERS.length)===1?"":"s"}</span></div><span class="a">${rs(i.amt)}</span><button data-del="${i.id}" aria-label="Delete ${esc(i.name)}">×</button></div>`
+  ).join(""):'<p class="empty">Your haul will show up here.</p>';
+}
+$("sForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const amt=parseFloat($("eAmt").value);if(!(amt>=0))return;
+  const split=[...$("eSplit").querySelectorAll("input:checked")].map(i=>i.value);
+  if(!split.length){toast("Pick at least one person to split with");return}
+  const o={type:"exp",name:$("eName").value.trim(),amt,cat:$("eCat").value,who:$("eWho").value,split};
+  e.target.reset();$("eWho").value=ME||MEMBERS[0];$("eName").focus();
+  try{await store.add("expenses",o)}catch(err){toast("Couldn’t save: "+err.message)}
+});
+$("spendView").addEventListener("click",async e=>{
+  const del=e.target.dataset.del,st=e.target.dataset.settle;
+  if(del){if(confirm("Delete this entry for everyone?"))store.del("expenses",del);return}
+  if(st!==undefined){
+    const t=TRANSFERS[+st];if(!t)return;
+    const amt=Math.round(t.amt);
+    if(confirm(`Record that ${t.from} paid ${t.to} ${rs(amt)}?`))store.add("expenses",{type:"settle",from:t.from,to:t.to,amt,by:ME});
+  }
+});
+$("sBudget").onchange=e=>store.set("settings","trip",{ts:0,budget:Math.max(0,parseFloat(e.target.value)||0)});
+
+/* ============================== shopping ============================== */
+function shopRow(i){
+  return `<div class="exp"><input type="checkbox" data-h="${i.id}" ${i.got?"checked":""} aria-label="Mark ${esc(i.name)} as bought"><div class="t"><b style="${i.got?"text-decoration:line-through;color:var(--mute)":""}">${esc(i.name)}</b><span>${[i.where&&"at "+esc(i.where),i.who&&"for "+esc(i.who),i.got&&i.gotBy&&"bought by "+esc(i.gotBy),!i.got&&i.by&&"added by "+esc(i.by)].filter(Boolean).join(" · ")||"&nbsp;"}</span></div><button data-hdel="${i.id}" aria-label="Delete ${esc(i.name)}">×</button></div>`;
+}
+function renderShop(){
+  const it=SHOP,got=it.filter(i=>i.got),todo=it.filter(i=>!i.got);
+  $("hCount").textContent=got.length+" bought";
+  $("hSub").textContent=todo.length+" still to buy";
+  $("hBar").style.width=(it.length?got.length/it.length*100:0)+"%";
+  $("hTodo").innerHTML=todo.length?todo.map(shopRow).join(""):'<p class="empty">Nothing left on the list.</p>';
+  $("hDone").innerHTML=got.length?got.map(shopRow).join(""):'<p class="empty">Tick items as you buy them.</p>';
+}
+$("hForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const o={name:$("hName").value.trim(),where:$("hWhere").value.trim(),who:$("hFor").value.trim(),got:false,by:ME||""};
+  e.target.reset();$("hName").focus();
+  store.add("shop",o).catch(err=>toast("Couldn’t save: "+err.message));
+});
+$("shopView").addEventListener("change",e=>{
+  const id=e.target.dataset.h;if(!id)return;
+  store.set("shop",id,{got:e.target.checked,gotBy:e.target.checked?ME:""});
+  if(e.target.checked)confetti(e.target);
+});
+$("shopView").addEventListener("click",e=>{
+  const id=e.target.dataset.hdel;if(!id)return;
+  store.del("shop",id);
+});
+
+/* ================================ route ================================ */
+const SEED=[
+ {id:"seed1",day:1,time:"13:00",name:"Airbnb check-in, Koramangala",q:"Koramangala, Bengaluru",note:"Host says 12:30 to 1:30pm. Drop bags and freshen up."},
+ {id:"seed2",day:1,time:"16:00",name:"Church Street",q:"Church Street, Bengaluru",note:"4 to 7pm. Cafes, walking, photos."},
+ {id:"seed3",day:1,time:"20:00",name:"Bob’s Bar",q:"Bob's Bar, Koramangala, Bengaluru",note:"Night-out outfit and heels."},
+ {id:"seed4",day:2,time:"11:00",name:"Commercial Street",q:"Commercial Street, Bengaluru",note:"Start bargaining at half price."},
+ {id:"seed5",day:2,time:"13:30",name:"Chickpet",q:"Chickpet, Bengaluru",note:"Sarees and fabrics. Check which shops are closed."},
+ {id:"seed6",day:2,time:"16:00",name:"Orion Mall",q:"Orion Mall, Rajajinagar, Bengaluru",note:"Chill, snacks and last bits of shopping."},
+ {id:"seed7",day:2,time:"20:00",name:"Pub night",q:"pubs in Koramangala, Bengaluru",note:"Pick the pub together, then edit this stop."}
+];
+const mapSrc=s=>"https://www.google.com/maps?q="+encodeURIComponent(s.q||s.name+", Bengaluru")+"&output=embed";
+const mapLink=s=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(s.q||s.name+", Bengaluru");
+const fmtT=t=>{if(!t)return"";const h=+t.slice(0,2);return((h+11)%12+1)+":"+t.slice(3,5)+(h<12?" am":" pm")};
+function renderRoute(){
+  const mf=$("mapFrame");
+  if(!mf.dataset.init){mf.dataset.init="1";mf.src="https://www.google.com/maps?q=Bengaluru&output=embed"}
+  const st=STOPS.slice().sort((a,b)=>(a.day-b.day)||(a.time||"99:99").localeCompare(b.time||"99:99")||((a.ts||0)-(b.ts||0)));
+  if(!st.length){
+    $("rList").innerHTML=`<div class="panel"><p class="empty">No stops yet. Start from a suggested route and edit it, or add your own below.</p><p style="margin:12px 0 0"><button data-seed="1">Load suggested route</button></p></div>`;
+    return;
+  }
+  const days=[...new Set(st.map(s=>s.day))].sort();
+  $("rList").innerHTML=days.map(d=>{
+    const ds=st.filter(s=>s.day===d);
+    const link=ds.length>1?"https://www.google.com/maps/dir/"+ds.map(s=>encodeURIComponent(s.q||s.name+", Bengaluru")).join("/"):mapLink(ds[0]);
+    return `<div class="panel"><div class="dayhead"><h2>${DAYN[d]||"Day "+d}</h2><a class="btn" href="${link}" target="_blank" rel="noopener">Open route in Maps ↗</a></div>`+
+    ds.map((s,i)=>`<div class="stop ${s.done?"visited":""}"><span class="node">${s.done?"✓":i+1}</span><b>${esc(s.name)}</b><span class="sub2">${[fmtT(s.time),esc(s.note||"")].filter(Boolean).join(" · ")||"&nbsp;"}</span><div class="acts"><button data-pin="${s.id}">📍 Show on map</button><button data-vis="${s.id}">${s.done?"Undo visited":"Visited ✓"}</button><button data-sdel="${s.id}" aria-label="Delete ${esc(s.name)}">×</button></div></div>`).join("")+`</div>`;
+  }).join("");
+}
+$("rForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const o={name:$("rName").value.trim(),day:+$("rDay").value,time:$("rTime").value,note:$("rNote").value.trim(),done:false};
+  e.target.reset();$("rName").focus();
+  store.add("stops",o).catch(err=>toast("Couldn’t save: "+err.message));
+});
+$("routeView").addEventListener("click",async e=>{
+  const d=e.target.dataset;
+  if(d.seed){await Promise.all(SEED.map((s,i)=>store.set("stops",s.id,{...s,done:false,ts:i+1})));return}
+  if(d.pin){
+    const s=STOPS.find(x=>x.id===d.pin);if(!s)return;
+    $("mapFrame").src=mapSrc(s);$("mapCap").innerHTML=`Showing <b>${esc(s.name)}</b> · <a href="${mapLink(s)}" target="_blank" rel="noopener">open in Maps ↗</a>`;
+    $("mapFrame").scrollIntoView({behavior:"smooth",block:"center"});return;
+  }
+  if(d.vis){const s=STOPS.find(x=>x.id===d.vis);if(s){store.set("stops",s.id,{done:!s.done});if(!s.done)confetti(e.target)}return}
+  if(d.sdel){store.del("stops",d.sdel)}
+});
+
+/* ================================ album ================================ */
+async function shrink(file){
+  let bmp;
+  try{bmp=await createImageBitmap(file,{imageOrientation:"from-image"})}
+  catch(e){bmp=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("Couldn’t read that image"));i.src=URL.createObjectURL(file)})}
+  const w=bmp.width||bmp.naturalWidth,h=bmp.height||bmp.naturalHeight;let max=1000;
+  for(let t=0;t<5;t++){
+    const sc=Math.min(1,max/Math.max(w,h)),c=document.createElement("canvas");
+    c.width=Math.round(w*sc);c.height=Math.round(h*sc);
+    c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+    for(const q of [.72,.6,.5]){const d=c.toDataURL("image/jpeg",q);if(d.length<900000)return d}
+    max*=.75;
+  }
+  throw new Error("That photo is too large");
+}
+$("mFile").addEventListener("change",()=>{
+  const fs=[...$("mFile").files];
+  $("mFileTxt").textContent=fs.length?fs.length+(fs.length===1?" photo":" photos")+" selected":"Choose photos";
+  $("mPrev").innerHTML=fs.slice(0,12).map(f=>`<img src="${URL.createObjectURL(f)}" alt="">`).join("");
+});
+$("mForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const files=[...$("mFile").files],text=$("mText").value.trim(),day=+$("mDay").value,btn=$("mBtn");
+  if(!files.length&&!text){toast("Add a photo or write a note first");return}
+  btn.disabled=true;
+  try{
+    if(!files.length)await store.add("memories",{who:ME,day,text,img:""});
+    for(let i=0;i<files.length;i++){
+      btn.textContent=`Uploading ${i+1} of ${files.length}…`;
+      const img=await shrink(files[i]);
+      await store.add("memories",{who:ME,day,text,img});
+    }
+    e.target.reset();$("mFileTxt").textContent="Choose photos";$("mPrev").innerHTML="";
+    toast("Added to the journal 💖");
+  }catch(err){console.error(err);toast("Couldn’t upload: "+err.message)}
+  finally{btn.disabled=false;btn.textContent="Add to album"}
+});
+function renderAlbum(){
+  const photos=MEM.filter(m=>m.img).length;
+  $("aCount").textContent=MEM.length+(MEM.length===1?" memory":" memories");
+  $("aSub").textContent=MEM.length?`${photos} photo${photos===1?"":"s"} · ${new Set(MEM.map(m=>m.who)).size} of you have added something`:"Nothing here yet. Be the first.";
+  $("aFilter").innerHTML=["all",...MEMBERS].map(m=>`<button class="chip ${FILT===m?"on":""}" data-f="${esc(m)}">${m==="all"?"Everyone":esc(m)}</button>`).join("");
+  const list=MEM.filter(m=>FILT==="all"||m.who===FILT).slice().reverse();
+  $("aGrid").innerHTML=list.length?list.map(m=>{
+    const meta=`${esc(m.who)} · ${DAYN[m.day]||"Day "+m.day} · ${new Date(m.ts).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}`;
+    return `<div class="mem ${m.img?"":"txt"}">${m.img?`<img class="ph" src="${m.img}" alt="${esc(m.text||"Photo by "+m.who)}" data-lb="${m.id}" loading="lazy">`:""}<div class="mt">${m.text?`<p>${esc(m.text)}</p>`:""}<span>${meta}</span>${m.who===ME?`<button data-mdel="${m.id}">Delete</button>`:""}</div></div>`;
+  }).join(""):'<p class="empty" style="grid-column:1/-1">Nothing to show yet.</p>';
+}
+$("albumView").addEventListener("click",e=>{
+  const d=e.target.dataset;
+  if(d.f){FILT=d.f;renderAlbum();return}
+  if(d.mdel){if(confirm("Delete this memory for everyone?"))store.del("memories",d.mdel);return}
+  if(d.lb){
+    const m=MEM.find(x=>x.id===d.lb);if(!m)return;
+    $("lbImg").src=m.img;$("lbCap").textContent=m.text||"";
+    $("lbMeta").textContent=`${m.who} · ${DAYN[m.day]||""}`;$("lb").hidden=false;
+  }
+});
+$("lb").onclick=()=>{$("lb").hidden=true};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("lb").hidden=true});
+
+/* ================================ start ================================ */
+tab("p");
+if(!ME)pickMe();
+setStatus();
+try{store=LIVE?await makeLive():makeLocal();SYNC=LIVE?"live":"demo"}
+catch(err){console.error(err);SYNC="error";SYNC_ERR=err.code||err.message||String(err);store=makeLocal()}
+setStatus();
+const on=(col,fn)=>store.sub(col,rows=>{fn(rows);refresh()});
+on("expenses",r=>{EXP=r});
+on("shop",r=>{SHOP=r});
+on("stops",r=>{STOPS=r});
+on("memories",r=>{MEM=r});
+on("settings",r=>{SET=r.find(x=>x.id==="trip")||{}});
+</script>
+</body>
+</html>
